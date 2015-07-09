@@ -1,6 +1,7 @@
 package com.zombierush.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Zombie
@@ -24,8 +25,32 @@ public class Zombie extends AbstractEntity{
     {
         super(t);
         game = g;
-        xPosition = 0;
-        yPosition = 0;
+        
+        int position = MathUtils.random(2800);
+        if (position < 600)
+        {
+            xPosition = 0;
+            yPosition = position;
+        }
+        else if (position < 1400)
+        {
+            position -= 600;
+            xPosition = position;
+            yPosition = 600;
+        }
+        else if (position < 2000)
+        {
+            position -= 1400;
+            xPosition = 800;
+            yPosition = position;
+        }
+        else
+        {
+            position -= 2000;
+           xPosition = position;
+           yPosition = 0; 
+        }
+        
         
         desiredX = xPosition;
         desiredY = yPosition;

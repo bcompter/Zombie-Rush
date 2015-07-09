@@ -113,12 +113,12 @@ public class PlayGame extends InputAdapter implements Screen {
     {
         for (int x = 0; x < 800;)
         {
-            for (int y = 600; y > -32;)
+            for (int y = 600; y > -128;)
             {
                 batch.draw(game.GetTileTex(), x, y);
-                y -= 32;
+                y -= 128;
             }
-            x += 32;
+            x += 128;
         }
         
     }  // end RenderBackground
