@@ -42,7 +42,7 @@ public class PlayGame extends InputAdapter implements Screen {
         batch = game.GetBatch();
         Gdx.input.setInputProcessor(this);
         
-        game.human = new Human(game.GetHumanTex());
+        game.human = new Human(game.GetHumanTex(), g);
         game.zombies = new Array();
     }
     
@@ -89,8 +89,6 @@ public class PlayGame extends InputAdapter implements Screen {
         game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 100, 100);
         
         batch.end();
-        
-        
     }
     
     /**
@@ -104,6 +102,18 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             z.Update(delta);
         }
+        
+        /**
+         * Remove any dead zombies
+         */
+        Array <Zombie> removeList = new Array();
+        for (Zombie z : game.zombies)
+        {
+            if (z.health <= 0)
+                removeList.add(z);
+        }
+        game.zombies.removeAll(removeList, true);
+        
     }  // end Update
     
     /**

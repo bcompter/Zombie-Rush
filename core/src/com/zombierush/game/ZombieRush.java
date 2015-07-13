@@ -126,12 +126,27 @@ public class ZombieRush extends Game {
     }
     
     /**
-     * 
-     * @return 
+     * Get the nearest human
      */
     public Human GetNearestHuman()
     {
         return human;
+    }
+    
+    /**
+     * Get the nearest zombie
+     */
+    public Zombie GetNearestZombie(float x, float y)
+    {
+        Zombie retval = new Zombie();
+        float closestDistance = 1000.0f;
+        for (Zombie z : zombies)
+        {
+            float distance = Math.abs(z.xPosition - x) + Math.abs(z.yPosition - y);
+            if (distance < closestDistance)
+                retval = z;
+        }
+        return retval;
     }
     
 }  // end ZombieRush

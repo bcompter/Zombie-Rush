@@ -18,6 +18,17 @@ public class Zombie extends AbstractEntity{
     // Speed in pixels per second
     float normalSpeed = 75;
     
+    // Flag used to pass "null" values
+    boolean isValid = true;
+    
+    /**
+     * Default constructor to pass "null" value zombies
+     */
+    public Zombie()
+    {
+        isValid = false;
+    }
+    
     /**
      * Create a new zombie
      */
@@ -25,6 +36,7 @@ public class Zombie extends AbstractEntity{
     {
         super(t);
         game = g;
+        health = 3;
         
         int position = MathUtils.random(2800);
         if (position < 600)
@@ -50,7 +62,6 @@ public class Zombie extends AbstractEntity{
            xPosition = position;
            yPosition = 0; 
         }
-        
         
         desiredX = xPosition;
         desiredY = yPosition;

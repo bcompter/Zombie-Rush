@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class Human extends AbstractEntity{
     
+    // Game reference
+    ZombieRush game;
+    
     // Commanded posiitons
     float desiredX;
     float desiredY;
@@ -14,10 +17,13 @@ public class Human extends AbstractEntity{
     // Speed in pixels per second
     float normalSpeed = 150;
     
+    // Our weapon
+    Weapon weapon = new Weapon();
+    
     /**
      * Create a new human
      */
-    public Human(Texture t)
+    public Human(Texture t, ZombieRush g)
     {
         super(t);
         xPosition = 700;
@@ -25,6 +31,8 @@ public class Human extends AbstractEntity{
         
         desiredX = xPosition;
         desiredY = yPosition;
+        
+        game = g;
     }
     
     /**
@@ -53,6 +61,28 @@ public class Human extends AbstractEntity{
             }
 
         }  // end if not at desired
+        
+        /**
+         * If we are out of ammo try to reload
+         */
+        if (weapon.currentAmmo == 0 && weapon.CanFire())
+        {
+            weapon.Reload();
+        }
+        else if (weapon.CanFire())
+        {
+            /**
+             * Check for nearby targets and attack if able
+             */
+            Zombie target = game.GetNearestZombie(xPosition, yPosition);
+            if (target.isValid)
+                weapon.Fire(this, target);
+        }
+        
+        /**
+         * Update our weapon
+         */
+        weapon.Update(delta);
         
     }  // end Update
     

@@ -15,6 +15,9 @@ public abstract class AbstractEntity implements iEntity {
     float xPosition;
     float yPosition;
     
+    // Health
+    float health;
+    
     /**
      * Default constructor
      */
@@ -50,5 +53,13 @@ public abstract class AbstractEntity implements iEntity {
     {
         
     }  // end Update
+    
+    /**
+     * Take damage
+     */
+    public void TakeDamage(float damage, float angle, boolean pushBack)
+    {
+        health -= damage;
+    }
     
 }  // end AbstractEntity
