@@ -114,6 +114,14 @@ public class PlayGame extends InputAdapter implements Screen {
         }
         game.zombies.removeAll(removeList, true);
         
+        /**
+         * Check for dead humans
+         */
+        if (game.human.health <= 0)
+        {
+            System.out.println("Human is DEAD!!!");
+        }
+        
     }  // end Update
     
     /**

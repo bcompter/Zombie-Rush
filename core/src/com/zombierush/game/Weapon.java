@@ -29,7 +29,7 @@ public class Weapon {
      */
     public Weapon()
     {
-        range = 250;
+        range = 500;
         accuracy = 60;
         damage = 1;
         ammoPerClip = 8;
@@ -63,7 +63,11 @@ public class Weapon {
      */
     public void Fire(AbstractEntity shooter, AbstractEntity target)
     {
-        float distance = Math.abs(shooter.xPosition - target.xPosition) + Math.abs(shooter.yPosition - target.yPosition);
+        double distance = 
+                Math.pow(Math.abs(shooter.xPosition - target.xPosition),2) 
+                + Math.pow(Math.abs(shooter.yPosition - target.yPosition),2);
+        distance = Math.sqrt(distance);        
+        
         if (distance < range)
         {
             System.out.println("Pew Pew!");

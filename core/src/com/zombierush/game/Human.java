@@ -33,6 +33,8 @@ public class Human extends AbstractEntity{
         desiredY = yPosition;
         
         game = g;
+        
+        health = 10;
     }
     
     /**

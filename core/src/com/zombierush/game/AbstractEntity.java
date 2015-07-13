@@ -2,6 +2,8 @@ package com.zombierush.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Basic entity
@@ -9,7 +11,7 @@ import com.badlogic.gdx.graphics.Texture;
 public abstract class AbstractEntity implements iEntity {
     
     // Sprite
-    Texture tex;
+    Sprite sprite;
     
     // Position
     float xPosition;
@@ -32,7 +34,7 @@ public abstract class AbstractEntity implements iEntity {
      */
     public AbstractEntity(Texture t)
     {
-        tex = t;
+        sprite = new Sprite(t);
     }
     
     /**
@@ -41,7 +43,8 @@ public abstract class AbstractEntity implements iEntity {
     @Override
     public void Render(SpriteBatch batch)
     {
-        batch.draw(tex, xPosition, yPosition);
+        sprite.setCenter(xPosition, yPosition);
+        sprite.draw(batch);
         
     }  // end Render
     
@@ -60,6 +63,10 @@ public abstract class AbstractEntity implements iEntity {
     public void TakeDamage(float damage, float angle, boolean pushBack)
     {
         health -= damage;
+        if (this instanceof Human)
+        {
+            System.out.println("OUCH!!!");
+        }
     }
     
 }  // end AbstractEntity
