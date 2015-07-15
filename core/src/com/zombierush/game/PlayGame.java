@@ -37,13 +37,14 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     public PlayGame(ZombieRush g)
     {
-        game = g;
-        camera = game.GetCamera();
-        batch = game.GetBatch();
+        game        = g;
+        camera      = game.GetCamera();
+        batch       = game.GetBatch();
         Gdx.input.setInputProcessor(this);
         
-        game.human = new Human(game.GetHumanTex(), g);
-        game.zombies = new Array();
+        game.human                  = new Human(game.GetHumanTex(), g);
+        game.zombies                = new Array();
+        game.barricades             = new Array();
     }
     
     /**
@@ -85,6 +86,7 @@ public class PlayGame extends InputAdapter implements Screen {
         RenderBackground();
         RenderHuman();
         RenderZombies();
+        RenderBarricades();
         
         game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 100, 100);
         
@@ -97,10 +99,17 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     private void Update(float delta)
     {
+        /**
+         * Update all game elements
+         */
         game.human.Update(delta);
         for (Zombie z : game.zombies)
         {
             z.Update(delta);
+        }
+        for (Barricade b : game.barricades)
+        {
+            b.Update(delta);
         }
         
         /**
@@ -125,10 +134,11 @@ public class PlayGame extends InputAdapter implements Screen {
     }  // end Update
     
     /**
-     * 
+     * Draw the background to the screen
      */
     private void RenderBackground()
     {
+        batch.disableBlending();
         for (int x = 0; x < 800;)
         {
             for (int y = 600; y > -128;)
@@ -138,6 +148,7 @@ public class PlayGame extends InputAdapter implements Screen {
             }
             x += 128;
         }
+        batch.enableBlending();
         
     }  // end RenderBackground
     
@@ -151,7 +162,7 @@ public class PlayGame extends InputAdapter implements Screen {
     }  // end RenderHuman
     
     /**
-     * 
+     * Render all zombies to the screen
      */
     private void RenderZombies()
     {
@@ -162,7 +173,18 @@ public class PlayGame extends InputAdapter implements Screen {
     }
     
     /**
-     * 
+     * Render all barricades to the screen
+     */
+    private void RenderBarricades()
+    {
+        for(Barricade b : game.barricades)
+        {
+            b.Render(batch);
+        }
+    }
+    
+    /**
+     * Handle mouse clicks
      */
     public boolean touchUp (int x, int y, int pointer, int button) 
     {
@@ -173,6 +195,11 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             // Update human's desired position to be the current click
             game.human.UpdateDesiredPosition(x, y);
+        }
+        else if (button == Input.Buttons.RIGHT)
+        {
+            // Build a new barricade at this coordinate
+            game.barricades.add(new Barricade(game.barricadeTex, x, y, game.human));
         }
         
         return true;

@@ -26,6 +26,7 @@ public class Human extends AbstractEntity{
     public Human(Texture t, ZombieRush g)
     {
         super(t);
+        sprite.setSize(32, 32);
         xPosition = 700;
         yPosition = 500;
         
@@ -38,7 +39,8 @@ public class Human extends AbstractEntity{
     }
     
     /**
-     * 
+     * Update this human
+     * Handle movement and weapons fire
      * @param delta 
      */
     @Override

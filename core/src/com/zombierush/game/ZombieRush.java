@@ -39,16 +39,19 @@ public class ZombieRush extends Game {
     
     // The zombies!  Lots of them!
     Array <Zombie> zombies;
+    
+    // Barricades
+    Array <Barricade> barricades;
 
     @Override
     public void create () {
         batch = new SpriteBatch();
         
         // Load textures
-        tileTex = new Texture("grass.png");
-        humanTex = new Texture("human.png");
-        zombieTex = new Texture("zombie.png");
-        barricadeTex = new Texture("barricade.png");
+        tileTex         = new Texture("grass.png");
+        humanTex        = new Texture("human.png");
+        zombieTex       = new Texture("zombie.png");
+        barricadeTex    = new Texture("barricade.png");
         
         // Prepare bitmapfont
         font = new BitmapFont();

@@ -41,6 +41,7 @@ public class Zombie extends AbstractEntity{
         super(t);
         game = g;
         health = 3;
+        sprite.setSize(32, 32);
         
         int position = MathUtils.random(2800);
         if (position < 600)
@@ -128,6 +129,16 @@ public class Zombie extends AbstractEntity{
                 collision = true;
             }
         }
+        for (int i = 0; i < game.barricades.size; i++)
+        {
+            Barricade c = game.barricades.get(i);
+            Rectangle b = c.sprite.getBoundingRectangle();
+            if (a.overlaps(b))
+            {
+                collision = true;
+            }
+        }
+        
         Rectangle b = game.human.sprite.getBoundingRectangle();
         if (a.overlaps(b))
         {
