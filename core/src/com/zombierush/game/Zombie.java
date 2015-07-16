@@ -72,7 +72,7 @@ public class Zombie extends AbstractEntity{
         desiredY = yPosition;
         
         // adjust our weapon to represent biting and clawing
-        weapon.range = 200;
+        weapon.range = 50;
         weapon.accuracy = 50;
         weapon.damage = 1;
         weapon.ammoPerClip = 3;
@@ -88,6 +88,8 @@ public class Zombie extends AbstractEntity{
      */
     public void Update(float delta)
     {
+        super.Update(delta);
+        
         // Set the desired position equal to the nearest human
         Human h = game.GetNearestHuman();
         desiredX = h.xPosition;
@@ -180,7 +182,9 @@ public class Zombie extends AbstractEntity{
             /**
              * Check for nearby targets and attack if able
              */
-            Human target = game.GetNearestHuman();
+            AbstractEntity target = game.GetNearestHuman();
+            weapon.Fire(this, target);
+            target = game.GetNearestBarricade();
             weapon.Fire(this, target);
         }
         

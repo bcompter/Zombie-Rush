@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 
 /**
  * Zombie Rush
@@ -27,6 +29,9 @@ public class ZombieRush extends Game {
     Texture tileTex;
     Texture barricadeTex;
     
+    // Shape Renderer
+    ShapeRenderer shapeRenderer;
+    
     // Camera
     FitViewport viewPort;
     OrthographicCamera camera;
@@ -42,9 +47,14 @@ public class ZombieRush extends Game {
     
     // Barricades
     Array <Barricade> barricades;
+    
+    // Gunshot effects
+    Array <ShapeEffect> shapeEffects;
 
     @Override
     public void create () {
+        
+        // Create our sprite batch to render things
         batch = new SpriteBatch();
         
         // Load textures
@@ -60,6 +70,9 @@ public class ZombieRush extends Game {
         // Setup camera
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 600);
+        
+        // SHape renderer, to render shapes...
+        shapeRenderer = new ShapeRenderer();
         
         // Away we go!
         setScreen(new MainMenu(this));
@@ -140,6 +153,22 @@ public class ZombieRush extends Game {
      * Get the nearest zombie
      */
     public Zombie GetNearestZombie(float x, float y)
+    {
+        Zombie retval = new Zombie();
+        float closestDistance = 1000.0f;
+        for (Zombie z : zombies)
+        {
+            float distance = Math.abs(z.xPosition - x) + Math.abs(z.yPosition - y);
+            if (distance < closestDistance)
+                retval = z;
+        }
+        return retval;
+    }
+    
+    /**
+     * Get the nearest barricade
+     */
+    public Zombie GetNearestBarricade(float x, float y)
     {
         Zombie retval = new Zombie();
         float closestDistance = 1000.0f;

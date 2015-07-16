@@ -70,7 +70,10 @@ public class Weapon {
         
         if (distance < range)
         {
-            System.out.println("Pew Pew!");
+            if (shooter instanceof Human)
+                System.out.println("Pew Pew!");
+            else
+                System.out.println("Bite Bite!");
             int tohit = MathUtils.random(100);
             if (tohit < accuracy)
             {
@@ -79,7 +82,19 @@ public class Weapon {
             }
             currentAmmo -= 1;
             currentCoolDown = shotCoolDown;
-        }
+            
+            /**
+             * Add a gunshot effect to the game
+             */
+            if (shooter instanceof Human)
+                shooter.game.shapeEffects.add(new ShapeEffect(
+                    shooter.game,
+                    shooter.xPosition, shooter.yPosition,
+                    target.xPosition, target.yPosition
+                ));
+            
+        }  // end if distance < range
+        
     }  // end Fire
     
     /**

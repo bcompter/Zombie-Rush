@@ -31,6 +31,7 @@ public class Barricade extends AbstractEntity{
     public Barricade(Texture t, int x, int y, Human h)
     {
         super(t);
+
         xPosition = x;
         yPosition = y;
         
@@ -38,7 +39,8 @@ public class Barricade extends AbstractEntity{
         beingBuilt = true;
         constructionTimeRemaining = 5;
         health = 50;
-        sprite.setSize(42, 42);
+        sprite.setSize(40, 40);
+        sprite.setAlpha(0.5f);
         
     }  // end constructor
     
@@ -76,29 +78,9 @@ public class Barricade extends AbstractEntity{
         {
             beingBuilt = false;
             constructionTimeRemaining = 0;
+            sprite.setAlpha(1.0f);
         }
         
     }  // end Update
-    
-    /**
-     * Render this entity to the screen
-     */
-    @Override
-    public void Render(SpriteBatch batch)
-    {
-        sprite.setCenter(xPosition, yPosition);
-        
-        // If we are being built, display kinda greyed out
-        if (beingBuilt)
-        {
-            sprite.setAlpha(0.5f);
-        }
-        else
-        {
-            sprite.setAlpha(1.0f);
-        }
-        sprite.draw(batch);
-        
-    }  // end Render
     
 }  // end barricade

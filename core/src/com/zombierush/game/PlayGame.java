@@ -45,6 +45,7 @@ public class PlayGame extends InputAdapter implements Screen {
         game.human                  = new Human(game.GetHumanTex(), g);
         game.zombies                = new Array();
         game.barricades             = new Array();
+        game.shapeEffects           = new Array();
     }
     
     /**
@@ -78,6 +79,7 @@ public class PlayGame extends InputAdapter implements Screen {
         // Update the camera
         camera.update();
         batch.setProjectionMatrix(camera.combined);
+        game.shapeRenderer.setProjectionMatrix(camera.combined);
         
         Gdx.gl.glClearColor(0, 1, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -88,9 +90,12 @@ public class PlayGame extends InputAdapter implements Screen {
         RenderZombies();
         RenderBarricades();
         
+        
         game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 100, 100);
         
         batch.end();
+        
+        RenderShapeEffects();
     }
     
     /**
@@ -111,6 +116,10 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             b.Update(delta);
         }
+        for (ShapeEffect e : game.shapeEffects)
+        {
+            e.Update(delta);
+        }
         
         /**
          * Remove any dead zombies
@@ -130,6 +139,17 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             System.out.println("Human is DEAD!!!");
         }
+        
+        /**
+         * Remove finished shape effects
+         */
+        Array <ShapeEffect> removeListE = new Array();
+        for (ShapeEffect e : game.shapeEffects)
+        {
+            if (e.timeToLive <= 0)
+                removeListE.add(e);
+        }
+        game.shapeEffects.removeAll(removeListE, true);
         
     }  // end Update
     
@@ -184,6 +204,26 @@ public class PlayGame extends InputAdapter implements Screen {
     }
     
     /**
+     * Render the cursor highlight to assist building
+     */
+    private void RenderHighlight()
+    {
+        
+    }
+    
+    /**
+     * Render all shape effects to the screen
+     */
+    private void RenderShapeEffects()
+    {
+        for(ShapeEffect e : game.shapeEffects)
+        {
+            e.Render(batch);
+        }
+    }
+    
+    
+    /**
      * Handle mouse clicks
      */
     public boolean touchUp (int x, int y, int pointer, int button) 
@@ -198,17 +238,30 @@ public class PlayGame extends InputAdapter implements Screen {
         }
         else if (button == Input.Buttons.RIGHT)
         {
-            // Build a new barricade at this coordinate
+            /**
+             * Barricades must be locked to 
+             */
+            x = (int)((x + 39) / 40 * 40);
+            y = (int)((y + 39) / 40 * 40);
+            
+            /**
+             * Don't build multiple barricades in the same spot
+             */
+            for (Barricade b : game.barricades)
+            {
+                if (b.xPosition == x && b.yPosition == y)
+                    return true;
+            }
+            
             game.barricades.add(new Barricade(game.barricadeTex, x, y, game.human));
         }
         
         return true;
-    }
+        
+    }  // end touchUp
     
     /**
-     * 
-     * @param keycode
-     * @return 
+     * Handle keyboard events
      */
     public boolean keyUp (int keycode) 
     {
@@ -254,8 +307,6 @@ public class PlayGame extends InputAdapter implements Screen {
     
     /**
      * Resize this menu
-     * @param width
-     * @param height 
      */
     public void resize(int width, int height)
     {

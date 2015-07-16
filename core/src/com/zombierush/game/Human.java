@@ -1,14 +1,12 @@
 package com.zombierush.game;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  *
  * @author briancompter1
  */
 public class Human extends AbstractEntity{
-    
-    // Game reference
-    ZombieRush game;
     
     // Commanded posiitons
     float desiredX;
@@ -46,7 +44,11 @@ public class Human extends AbstractEntity{
     @Override
     public void Update(float delta)
     {
+        super.Update(delta);
+        
         // If we are not at our desired location start moving!
+        float tempX = xPosition;
+        float tempY = yPosition;
         if (((int)desiredX) != ((int)xPosition) || ((int)desiredY) != ((int)yPosition))
         {
             float dx = desiredX - xPosition;
