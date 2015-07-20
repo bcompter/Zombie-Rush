@@ -95,6 +95,13 @@ public abstract class AbstractEntity implements iEntity {
         {
             System.out.println("OUCH!!!");
         }
+        
+        // Auto kill any un built barricades
+        if (this instanceof Barricade)
+        {
+            if (((Barricade)this).beingBuilt)
+                health = 0;
+        }
     }
     
 }  // end AbstractEntity

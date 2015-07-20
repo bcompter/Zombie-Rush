@@ -184,8 +184,10 @@ public class Zombie extends AbstractEntity{
              */
             AbstractEntity target = game.GetNearestHuman();
             weapon.Fire(this, target);
-            target = game.GetNearestBarricade();
-            weapon.Fire(this, target);
+            target = game.GetNearestBarricade(xPosition, yPosition);
+            
+            if (target.health > 0)
+                weapon.Fire(this, target);
         }
         
         

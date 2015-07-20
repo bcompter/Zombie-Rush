@@ -25,6 +25,14 @@ public class Barricade extends AbstractEntity{
     float constructionTimeRemaining;
     
     /**
+     * Default constructor
+     */
+    public Barricade()
+    {
+        health = 0;
+    }
+    
+    /**
      * Build a new barricade at a specified coordinates 
      * The builder must finish construction by being close by
      */
@@ -38,9 +46,9 @@ public class Barricade extends AbstractEntity{
         thePersonBuildingMe = h;
         beingBuilt = true;
         constructionTimeRemaining = 5;
-        health = 50;
+        health = 5;
         sprite.setSize(40, 40);
-        sprite.setAlpha(0.5f);
+        alpha = 0.5f;
         
     }  // end constructor
     
@@ -78,7 +86,7 @@ public class Barricade extends AbstractEntity{
         {
             beingBuilt = false;
             constructionTimeRemaining = 0;
-            sprite.setAlpha(1.0f);
+            alpha = 1;
         }
         
     }  // end Update

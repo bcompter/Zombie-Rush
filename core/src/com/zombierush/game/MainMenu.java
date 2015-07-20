@@ -1,12 +1,15 @@
 package com.zombierush.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Main Menu
@@ -22,6 +25,9 @@ public class MainMenu extends InputAdapter implements Screen{
     // Sprite batch reference
     SpriteBatch batch;
     
+    // Textures for the menu
+    Array <GenericEntity> entities;
+    
     /**
      * Default constructor
      */
@@ -31,6 +37,23 @@ public class MainMenu extends InputAdapter implements Screen{
         camera = game.GetCamera();
         batch = game.GetBatch();
         Gdx.input.setInputProcessor(this);
+        
+        entities = new Array();
+        
+        // Background texture
+        GenericEntity bg = new GenericEntity(game.dirtTex);
+        bg.sprite.setSize(game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
+        bg.xPosition = game.SCREEN_WIDTH/2;
+        bg.yPosition = game.SCREEN_HEIGHT/2;
+        bg.sprite.setAlpha(0.8f);
+        entities.add(bg);
+        
+        // Menu Bars
+        GenericEntity menu = new GenericEntity(game.barricadeTex);
+        menu.sprite.setSize(400, 100);
+        menu.xPosition = game.SCREEN_WIDTH/2;
+        menu.yPosition = 500;
+        entities.add(menu);
     }
     
     /**
@@ -51,27 +74,48 @@ public class MainMenu extends InputAdapter implements Screen{
         camera.update();
         batch.setProjectionMatrix(camera.combined);
         
-        Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.GetBatch().begin();
-        game.GetFont().draw(game.GetBatch(), "Main Menu, press enter...", 100, 100);
+        
+        // Render all entities
+        for (GenericEntity g : entities)
+        {
+            g.Render(batch);
+        }
+        
+        // Get mouse position
+        int x = Gdx.input.getX();
+        int y = Gdx.input.getY();
+        y = game.SCREEN_HEIGHT - y;
+        
+        game.GetFont().draw(game.GetBatch(), "New Game", game.SCREEN_WIDTH/2-25, 500);
+        game.GetFont().draw(game.GetBatch(), "("+x+", "+y+")", 5, 20);
         game.GetBatch().end();
     }
     
-    
     /**
-     * 
-     * @param keycode
-     * @return 
+     * Handle mouse clicks
      */
-    public boolean keyUp (int keycode) 
+    public boolean touchUp (int x, int y, int pointer, int button) 
     {
-        if (keycode == Keys.ENTER)
+        // Modify touch coordinates to match render axis
+        y = game.SCREEN_HEIGHT - y;
+        
+        if (button == Input.Buttons.LEFT)
         {
-            game.setScreen(new PlayGame(game));
+            // See if we are clicking our button
+            Rectangle a = entities.get(1).sprite.getBoundingRectangle();
+            Rectangle b = new Rectangle(x, y, 1, 1);
+            if (a.overlaps(b))
+            {
+                game.setScreen(new PlayGame(game));
+            }
+            
         }
+                
         return true;
-    }
+        
+    }  // end touchUp
     
     /**
      * Dispose of this menu

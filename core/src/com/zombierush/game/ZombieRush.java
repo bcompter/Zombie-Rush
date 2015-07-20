@@ -28,6 +28,7 @@ public class ZombieRush extends Game {
     Texture zombieTex;
     Texture tileTex;
     Texture barricadeTex;
+    Texture dirtTex;
     
     // Shape Renderer
     ShapeRenderer shapeRenderer;
@@ -35,6 +36,10 @@ public class ZombieRush extends Game {
     // Camera
     FitViewport viewPort;
     OrthographicCamera camera;
+    
+    // Screen size
+    final int SCREEN_HEIGHT = 600;
+    final int SCREEN_WIDTH = 800;
     
     // Text font handler
     BitmapFont font;
@@ -62,6 +67,7 @@ public class ZombieRush extends Game {
         humanTex        = new Texture("human.png");
         zombieTex       = new Texture("zombie.png");
         barricadeTex    = new Texture("barricade.png");
+        dirtTex         = new Texture("dirt.png");
         
         // Prepare bitmapfont
         font = new BitmapFont();
@@ -69,7 +75,7 @@ public class ZombieRush extends Game {
         
         // Setup camera
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 800, 600);
+        camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
         
         // SHape renderer, to render shapes...
         shapeRenderer = new ShapeRenderer();
@@ -79,8 +85,7 @@ public class ZombieRush extends Game {
     }
     
     /**
-     * 
-     * @return 
+     * Get the sprite batch for this game
      */
     public SpriteBatch GetBatch()
     {
@@ -88,48 +93,11 @@ public class ZombieRush extends Game {
     }
     
     /**
-     * 
-     * @return 
+     * Get the bitmap font for this game
      */
     public BitmapFont GetFont()
     {
         return font;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public Texture GetTileTex()
-    {
-        return tileTex;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public Texture GetHumanTex()
-    {
-        return humanTex;
-    }
-    
-    /**
-     * 
-     * @return 
-     */
-    public Texture GetZombieTex()
-    {
-        return zombieTex;
-    }
-          
-    /**
-     * 
-     * @return 
-     */
-    public Texture GetBarricadetex()
-    {
-        return barricadeTex;
     }
     
     /**
@@ -168,15 +136,16 @@ public class ZombieRush extends Game {
     /**
      * Get the nearest barricade
      */
-    public Zombie GetNearestBarricade(float x, float y)
+    public Barricade GetNearestBarricade(float x, float y)
     {
-        Zombie retval = new Zombie();
+        Barricade retval = new Barricade();
         float closestDistance = 1000.0f;
-        for (Zombie z : zombies)
+        for (int i = 0; i < barricades.size; i++)
         {
-            float distance = Math.abs(z.xPosition - x) + Math.abs(z.yPosition - y);
+            Barricade b = barricades.get(i);
+            float distance = Math.abs(b.xPosition - x) + Math.abs(b.yPosition - y);
             if (distance < closestDistance)
-                retval = z;
+                retval = b;
         }
         return retval;
     }

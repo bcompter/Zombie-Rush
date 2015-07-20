@@ -42,7 +42,7 @@ public class PlayGame extends InputAdapter implements Screen {
         batch       = game.GetBatch();
         Gdx.input.setInputProcessor(this);
         
-        game.human                  = new Human(game.GetHumanTex(), g);
+        game.human                  = new Human(game.humanTex, g);
         game.zombies                = new Array();
         game.barricades             = new Array();
         game.shapeEffects           = new Array();
@@ -141,6 +141,17 @@ public class PlayGame extends InputAdapter implements Screen {
         }
         
         /**
+         * Remove any dead barricades
+         */
+        Array <Barricade> removeListB = new Array();
+        for (Barricade b : game.barricades)
+        {
+            if (b.health <= 0)
+                removeListB.add(b);
+        }
+        game.barricades.removeAll(removeListB, true);
+        
+        /**
          * Remove finished shape effects
          */
         Array <ShapeEffect> removeListE = new Array();
@@ -163,7 +174,7 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             for (int y = 600; y > -128;)
             {
-                batch.draw(game.GetTileTex(), x, y);
+                batch.draw(game.tileTex, x, y);
                 y -= 128;
             }
             x += 128;
@@ -268,7 +279,12 @@ public class PlayGame extends InputAdapter implements Screen {
         if (keycode == Input.Keys.Z)
         {
             // Spawn a new zombie!
-            game.zombies.add(new Zombie(game.GetZombieTex(), game));
+            game.zombies.add(new Zombie(game.zombieTex, game));
+        }
+        else if (keycode == Input.Keys.S)
+        {
+            // Take a screenshot
+            ScreenShotFactory.saveScreenshot();
         }
         return true;
     }
