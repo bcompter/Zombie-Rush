@@ -73,7 +73,7 @@ public class Zombie extends AbstractEntity{
         
         // adjust our weapon to represent biting and clawing
         weapon.range = 50;
-        weapon.accuracy = 50;
+        weapon.accuracy = 70;
         weapon.damage = 1;
         weapon.ammoPerClip = 3;
         weapon.currentAmmo = 3;

@@ -45,7 +45,7 @@ public class Barricade extends AbstractEntity{
         
         thePersonBuildingMe = h;
         beingBuilt = true;
-        constructionTimeRemaining = 5;
+        constructionTimeRemaining = 0.1f;   /* DEBUG */
         health = 5;
         sprite.setSize(40, 40);
         alpha = 0.5f;
@@ -60,6 +60,8 @@ public class Barricade extends AbstractEntity{
     @Override
     public void Update(float delta)
     {
+        super.Update(delta);
+        
         /**
          * Nothing to do unless we are under construction
          */

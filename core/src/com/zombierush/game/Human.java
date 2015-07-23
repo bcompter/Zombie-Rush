@@ -24,15 +24,14 @@ public class Human extends AbstractEntity{
     public Human(Texture t, ZombieRush g)
     {
         super(t);
+        game = g;
         sprite.setSize(32, 32);
-        xPosition = 700;
-        yPosition = 500;
+        xPosition = game.SCREEN_WIDTH/2;
+        yPosition = game.SCREEN_HEIGHT/2;
         
         desiredX = xPosition;
         desiredY = yPosition;
-        
-        game = g;
-        
+
         health = 10;
     }
     

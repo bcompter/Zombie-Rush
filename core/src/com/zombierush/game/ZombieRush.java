@@ -55,6 +55,12 @@ public class ZombieRush extends Game {
     
     // Gunshot effects
     Array <ShapeEffect> shapeEffects;
+    
+    // Player points
+    int points = 0;
+    
+    // Player money
+    int bucks = 0;
 
     @Override
     public void create () {
@@ -126,7 +132,7 @@ public class ZombieRush extends Game {
         float closestDistance = 1000.0f;
         for (Zombie z : zombies)
         {
-            float distance = Math.abs(z.xPosition - x) + Math.abs(z.yPosition - y);
+            float distance = GetDistance(x, y, z.xPosition, z.yPosition);
             if (distance < closestDistance)
                 retval = z;
         }
@@ -143,11 +149,37 @@ public class ZombieRush extends Game {
         for (int i = 0; i < barricades.size; i++)
         {
             Barricade b = barricades.get(i);
-            float distance = Math.abs(b.xPosition - x) + Math.abs(b.yPosition - y);
+            float distance = GetDistance(x, y, b.xPosition, b.yPosition);
             if (distance < closestDistance)
                 retval = b;
         }
         return retval;
+    }
+    
+    /**
+     * Get the distance between two entities
+     */
+    public float GetDistance(AbstractEntity a, AbstractEntity b)
+    {
+        double distance = 
+                Math.pow(Math.abs(a.xPosition - b.xPosition),2) 
+                + Math.pow(Math.abs(a.yPosition - b.yPosition),2);
+        distance = Math.sqrt(distance);        
+        
+        return (float)distance;
+    }
+    
+    /**
+     * Get the distance between two coordinates
+     */
+    public float GetDistance(float x1, float y1, float x2, float y2)
+    {
+        double distance = 
+                Math.pow(Math.abs(x1 - x2),2) 
+                + Math.pow(Math.abs(y1 - y2),2);
+        distance = Math.sqrt(distance);        
+        
+        return (float)distance;
     }
     
 }  // end ZombieRush

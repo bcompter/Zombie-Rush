@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.graphics.FPSLogger;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Main game play screen
@@ -31,6 +32,9 @@ public class PlayGame extends InputAdapter implements Screen {
     int fps = 0;
     int numFrames = 0;
     float deltaT = 0.0f;
+    
+    // Textures for the HUD
+    Array <GenericEntity> entities;
 
     /**
      * Default constructor
@@ -46,6 +50,18 @@ public class PlayGame extends InputAdapter implements Screen {
         game.zombies                = new Array();
         game.barricades             = new Array();
         game.shapeEffects           = new Array();
+        entities                    = new Array();
+        
+        // Create HUD textures
+        GenericEntity ge = new GenericEntity(game.barricadeTex);
+        ge.sprite.setSize(game.SCREEN_WIDTH, 100);
+        ge.xPosition = game.SCREEN_WIDTH/2;
+        ge.yPosition = 50;
+        entities.add(ge);
+        
+        // Reset game variables
+        game.points = 0;
+        game.bucks = 0;
     }
     
     /**
@@ -89,13 +105,14 @@ public class PlayGame extends InputAdapter implements Screen {
         RenderHuman();
         RenderZombies();
         RenderBarricades();
-        
+        RenderHUD();
         
         game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 100, 100);
         
         batch.end();
         
         RenderShapeEffects();
+        RenderHighlight();
     }
     
     /**
@@ -219,7 +236,25 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     private void RenderHighlight()
     {
+        // Get mouse position
+        int x = Gdx.input.getX();
+        int y = Gdx.input.getY();
+        y = game.SCREEN_HEIGHT - y;
+        x = (int)((x + 39) / 40 * 40);
+        y = (int)((y + 39) / 40 * 40);
+        x -= 20;
+        y -= 20;
         
+        // Don't overlap the HUD
+        if (y < 100)
+            return;
+        
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        game.shapeRenderer.setColor(0.5f, 1.0f, 0.5f, 0.5f);
+        game.shapeRenderer.rect(x, y, 40, 40);
+        game.shapeRenderer.end();
     }
     
     /**
@@ -233,7 +268,17 @@ public class PlayGame extends InputAdapter implements Screen {
         }
     }
     
-    
+    /**
+     * Render everything to create our HUD
+     */
+    private void RenderHUD()
+    {
+        for (GenericEntity g : entities)
+        {
+            g.Render(batch);
+        }
+    }
+        
     /**
      * Handle mouse clicks
      */
@@ -250,7 +295,7 @@ public class PlayGame extends InputAdapter implements Screen {
         else if (button == Input.Buttons.RIGHT)
         {
             /**
-             * Barricades must be locked to 
+             * Barricades must be locked to a grid
              */
             x = (int)((x + 39) / 40 * 40);
             y = (int)((y + 39) / 40 * 40);
