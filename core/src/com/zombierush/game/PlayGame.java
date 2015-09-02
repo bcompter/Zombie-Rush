@@ -113,6 +113,7 @@ public class PlayGame extends InputAdapter implements Screen {
         
         RenderShapeEffects();
         RenderHighlight();
+        RenderNightOverlay();
     }
     
     /**
@@ -121,6 +122,13 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     private void Update(float delta)
     {
+        /**
+         * Update in game time
+         */
+        game.timeOfDay += delta;
+        if (game.timeOfDay > game.MAX_TIME_OF_DAY)
+            game.timeOfDay -= game.MAX_TIME_OF_DAY;
+        
         /**
          * Update all game elements
          */
@@ -240,10 +248,8 @@ public class PlayGame extends InputAdapter implements Screen {
         int x = Gdx.input.getX();
         int y = Gdx.input.getY();
         y = game.SCREEN_HEIGHT - y;
-        x = (int)((x + 39) / 40 * 40);
-        y = (int)((y + 39) / 40 * 40);
-        x -= 20;
-        y -= 20;
+        x = (int)((x) / 40 * 40);
+        y = (int)((y) / 40 * 40);
         
         // Don't overlap the HUD
         if (y < 100)
@@ -254,6 +260,36 @@ public class PlayGame extends InputAdapter implements Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         game.shapeRenderer.setColor(0.5f, 1.0f, 0.5f, 0.5f);
         game.shapeRenderer.rect(x, y, 40, 40);
+        game.shapeRenderer.end();
+    }
+    
+    /**
+     * Render the transparent overlay that makes it night
+     */
+    private void RenderNightOverlay()
+    {
+        float alpha = 0.0f;
+        float t = Math.abs(game.timeOfDay - (game.MAX_TIME_OF_DAY / 2));
+        if (t > game.MAX_TIME_OF_DAY * game.MAX_STOP)
+        {
+            alpha = game.MAX_ALPHA;
+        }   
+        else if (t < game.MAX_TIME_OF_DAY * game.MIN_STOP)
+        {
+            alpha = 0;
+        }
+        else
+        {
+            t -= (game.MAX_TIME_OF_DAY * game.MIN_STOP);
+            t = t / (game.MAX_TIME_OF_DAY * game.MAX_STOP - game.MAX_TIME_OF_DAY * game.MIN_STOP);
+            alpha = game.MAX_ALPHA * t;
+        }
+        
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        game.shapeRenderer.setColor(0, 0, 0.6f, alpha);
+        game.shapeRenderer.rect(0, 100, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
         game.shapeRenderer.end();
     }
     
@@ -297,8 +333,10 @@ public class PlayGame extends InputAdapter implements Screen {
             /**
              * Barricades must be locked to a grid
              */
-            x = (int)((x + 39) / 40 * 40);
-            y = (int)((y + 39) / 40 * 40);
+            x = (int)((x) / 40 * 40);
+            y = (int)((y) / 40 * 40);
+            x += 20;
+            y += 20;
             
             /**
              * Don't build multiple barricades in the same spot

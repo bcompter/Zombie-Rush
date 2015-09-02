@@ -61,6 +61,13 @@ public class ZombieRush extends Game {
     
     // Player money
     int bucks = 0;
+    
+    // Time of Day
+    float timeOfDay = 40;
+    final float MAX_TIME_OF_DAY = 120;
+    final float MAX_ALPHA = 0.6f;
+    final float MAX_STOP = 0.3f;
+    final float MIN_STOP = 0.2f;
 
     @Override
     public void create () {
