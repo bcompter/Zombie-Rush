@@ -45,7 +45,10 @@ public class ZombieRush extends Game {
     BitmapFont font;
     
     // The human! A list of humans later on...
-    Human human;
+    Array <Human> humans;
+    
+    // The currently selected 
+    Human selectedHuman;
     
     // The zombies!  Lots of them!
     Array <Zombie> zombies;
@@ -68,6 +71,11 @@ public class ZombieRush extends Game {
     final float MAX_ALPHA = 0.6f;
     final float MAX_STOP = 0.3f;
     final float MIN_STOP = 0.2f;
+    
+    // Click state
+    final int NORMAL = 1;
+    final int BUILD = 2;
+    int clickState = NORMAL;
 
     @Override
     public void create () {
@@ -125,9 +133,17 @@ public class ZombieRush extends Game {
     /**
      * Get the nearest human
      */
-    public Human GetNearestHuman()
+    public Human GetNearestHuman(float x, float y)
     {
-        return human;
+        Human retval = new Human();
+        float closestDistance = 1000.0f;
+        for (Human h : humans)
+        {
+            float distance = GetDistance(x, y, h.xPosition, h.yPosition);
+            if (distance < closestDistance)
+                retval = h;
+        }
+        return retval;
     }
     
     /**

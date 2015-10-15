@@ -91,7 +91,7 @@ public class Zombie extends AbstractEntity{
         super.Update(delta);
         
         // Set the desired position equal to the nearest human
-        Human h = game.GetNearestHuman();
+        Human h = game.GetNearestHuman(xPosition, yPosition);
         desiredX = h.xPosition;
         desiredY = h.yPosition;
         
@@ -141,18 +141,22 @@ public class Zombie extends AbstractEntity{
             }
         }
         
-        Rectangle b = game.human.sprite.getBoundingRectangle();
-        if (a.overlaps(b))
+        for (int i = 0; i < game.humans.size; i++)
         {
-            collision = true;
+            Human tempHuman = game.humans.get(i);
+            Rectangle b = tempHuman.sprite.getBoundingRectangle();
+            if (a.overlaps(b))
+            {
+                collision = true;
+            }
+            if (collision)
+            {
+                xPosition = tempX;
+                yPosition = tempY;
+                sprite.setCenter(xPosition, yPosition);
+            }
         }
-        if (collision)
-        {
-            xPosition = tempX;
-            yPosition = tempY;
-            sprite.setCenter(xPosition, yPosition);
-        }
-        
+
         /**
          * Handle attacks
          */
@@ -182,7 +186,7 @@ public class Zombie extends AbstractEntity{
             /**
              * Check for nearby targets and attack if able
              */
-            AbstractEntity target = game.GetNearestHuman();
+            AbstractEntity target = game.GetNearestHuman(xPosition, yPosition);
             weapon.Fire(this, target);
             target = game.GetNearestBarricade(xPosition, yPosition);
             

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 
 /**
  * Main game play screen
@@ -46,11 +47,15 @@ public class PlayGame extends InputAdapter implements Screen {
         batch       = game.GetBatch();
         Gdx.input.setInputProcessor(this);
         
-        game.human                  = new Human(game.humanTex, g);
+        
         game.zombies                = new Array();
         game.barricades             = new Array();
         game.shapeEffects           = new Array();
         entities                    = new Array();
+        game.humans                 = new Array();
+        game.humans.add(new Human(game.humanTex, g));
+        game.humans.add(new Human(game.humanTex, g));
+        game.selectedHuman = new Human();
         
         // Create HUD textures
         GenericEntity ge = new GenericEntity(game.barricadeTex);
@@ -132,7 +137,10 @@ public class PlayGame extends InputAdapter implements Screen {
         /**
          * Update all game elements
          */
-        game.human.Update(delta);
+        for (Human h : game.humans)
+        {
+            h.Update(delta);
+        }
         for (Zombie z : game.zombies)
         {
             z.Update(delta);
@@ -160,9 +168,12 @@ public class PlayGame extends InputAdapter implements Screen {
         /**
          * Check for dead humans
          */
-        if (game.human.health <= 0)
+        for (Human h : game.humans)
         {
-            System.out.println("Human is DEAD!!!");
+            if (h.health <= 0)
+            {
+                System.out.println("Human is DEAD!!!");
+            }
         }
         
         /**
@@ -213,7 +224,10 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     private void RenderHuman()
     {
-        game.human.Render(batch);
+        for (Human h : game.humans)
+        {
+            h.Render(batch);
+        }
         
     }  // end RenderHuman
     
@@ -244,6 +258,9 @@ public class PlayGame extends InputAdapter implements Screen {
      */
     private void RenderHighlight()
     {
+        if (game.clickState != game.BUILD)
+            return;
+        
         // Get mouse position
         int x = Gdx.input.getX();
         int y = Gdx.input.getY();
@@ -323,12 +340,24 @@ public class PlayGame extends InputAdapter implements Screen {
         // Modify touch coordinates to match render axis
         y = 600 - y;
         
-        if (button == Input.Buttons.LEFT)
+        if (button == Input.Buttons.LEFT && game.clickState == game.NORMAL)
+        {
+            // See if we are selecting a new human
+            for (Human h : game.humans)
+            {
+                Rectangle r = new Rectangle(x, y, 1, 1);
+                if (r.overlaps(h.sprite.getBoundingRectangle()))
+                {
+                    game.selectedHuman = h;
+                }
+            }
+        }        
+        else if (button == Input.Buttons.RIGHT && game.clickState == game.NORMAL && game.selectedHuman.isValid)
         {
             // Update human's desired position to be the current click
-            game.human.UpdateDesiredPosition(x, y);
+            game.selectedHuman.UpdateDesiredPosition(x, y);
         }
-        else if (button == Input.Buttons.RIGHT)
+        else if (button == Input.Buttons.RIGHT && game.clickState == game.BUILD && game.selectedHuman.isValid)
         {
             /**
              * Barricades must be locked to a grid
@@ -347,7 +376,8 @@ public class PlayGame extends InputAdapter implements Screen {
                     return true;
             }
             
-            game.barricades.add(new Barricade(game.barricadeTex, x, y, game.human));
+            game.barricades.add(new Barricade(game.barricadeTex, x, y, game.selectedHuman));
+            game.clickState = game.NORMAL;  // Switch back to normal click mode
         }
         
         return true;
@@ -368,6 +398,11 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             // Take a screenshot
             ScreenShotFactory.saveScreenshot();
+        }
+        else if (keycode == Input.Keys.B)
+        {
+            // Switch to build
+            game.clickState = game.BUILD;
         }
         return true;
     }

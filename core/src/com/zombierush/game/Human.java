@@ -18,6 +18,17 @@ public class Human extends AbstractEntity{
     // Our weapon
     Weapon weapon = new Weapon();
     
+    // Flag used to pass "null" values
+    boolean isValid = true;
+    
+    /**
+     * Default constructor
+     */
+    public Human()
+    {
+        isValid = false;
+    }
+    
     /**
      * Create a new human
      */
