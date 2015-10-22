@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Main game play screen
@@ -36,6 +37,12 @@ public class PlayGame extends InputAdapter implements Screen {
     
     // Textures for the HUD
     Array <GenericEntity> entities;
+    GenericEntity selectedHumanHUD;
+    
+    // Zombie timer
+    float timeSinceLastZombieSpawn = 0.0f;
+    float timeSinceLastZombieCheck = 0;
+    final float ZOMBIE_SPAWN_RATE = 3.0f;
 
     /**
      * Default constructor
@@ -46,7 +53,6 @@ public class PlayGame extends InputAdapter implements Screen {
         camera      = game.GetCamera();
         batch       = game.GetBatch();
         Gdx.input.setInputProcessor(this);
-        
         
         game.zombies                = new Array();
         game.barricades             = new Array();
@@ -63,6 +69,10 @@ public class PlayGame extends InputAdapter implements Screen {
         ge.xPosition = game.SCREEN_WIDTH/2;
         ge.yPosition = 50;
         entities.add(ge);
+        selectedHumanHUD = new GenericEntity(game.humanTex);
+        selectedHumanHUD.xPosition = 100;
+        selectedHumanHUD.yPosition = 60;
+        selectedHumanHUD.sprite.setSize(45, 45);
         
         // Reset game variables
         game.points = 0;
@@ -112,7 +122,7 @@ public class PlayGame extends InputAdapter implements Screen {
         RenderBarricades();
         RenderHUD();
         
-        game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 100, 100);
+        game.GetFont().draw(game.GetBatch(), "FPS: " + fps, 10, 80);
         
         batch.end();
         
@@ -133,6 +143,29 @@ public class PlayGame extends InputAdapter implements Screen {
         game.timeOfDay += delta;
         if (game.timeOfDay > game.MAX_TIME_OF_DAY)
             game.timeOfDay -= game.MAX_TIME_OF_DAY;
+        
+        // Spawn new zombies as appropriate
+        if (game.timeOfDay < game.MAX_TIME_OF_DAY * 0.25 || game.timeOfDay > game.MAX_TIME_OF_DAY * 0.75)
+        {
+            timeSinceLastZombieCheck += delta;
+            if (timeSinceLastZombieCheck > 1)
+            {
+                timeSinceLastZombieSpawn += delta;
+                float rnd = MathUtils.random(ZOMBIE_SPAWN_RATE);
+                
+                if (rnd < timeSinceLastZombieSpawn)
+                {
+                    game.zombies.add(new Zombie(game.zombieTex, game));
+                    timeSinceLastZombieSpawn = 0;
+                }
+                
+                timeSinceLastZombieCheck = 0;
+            } 
+        }
+        else
+        {
+            timeSinceLastZombieSpawn = 0;
+        }
         
         /**
          * Update all game elements
@@ -161,7 +194,11 @@ public class PlayGame extends InputAdapter implements Screen {
         for (Zombie z : game.zombies)
         {
             if (z.health <= 0)
+            {
                 removeList.add(z);
+                game.points++;
+                game.bucks++;
+            }
         }
         game.zombies.removeAll(removeList, true);
         
@@ -197,6 +234,9 @@ public class PlayGame extends InputAdapter implements Screen {
                 removeListE.add(e);
         }
         game.shapeEffects.removeAll(removeListE, true);
+        
+
+        
         
     }  // end Update
     
@@ -305,7 +345,7 @@ public class PlayGame extends InputAdapter implements Screen {
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        game.shapeRenderer.setColor(0, 0, 0.6f, alpha);
+        game.shapeRenderer.setColor(0, 0.2f, 0.6f, alpha);
         game.shapeRenderer.rect(0, 100, game.SCREEN_WIDTH, game.SCREEN_HEIGHT);
         game.shapeRenderer.end();
     }
@@ -330,6 +370,23 @@ public class PlayGame extends InputAdapter implements Screen {
         {
             g.Render(batch);
         }
+        
+        // Points
+        game.GetFont().draw(game.GetBatch(), "Points: " + game.points, 200, 80);
+        
+        // Bucks
+        game.GetFont().draw(game.GetBatch(), "Bucks: " + game.bucks, 300, 80);
+        
+        // Selected human
+        if (game.selectedHuman.isValid)
+        {
+            selectedHumanHUD.Render(batch);
+            game.GetFont().draw(game.GetBatch(), (int)(game.selectedHuman.health*10) + "%", 80, 20);
+        }
+        
+        // Night/day clock
+        // todo
+        
     }
         
     /**
@@ -377,6 +434,8 @@ public class PlayGame extends InputAdapter implements Screen {
             }
             
             game.barricades.add(new Barricade(game.barricadeTex, x, y, game.selectedHuman));
+            game.selectedHuman.UpdateDesiredPosition(x, y);
+            
             game.clickState = game.NORMAL;  // Switch back to normal click mode
         }
         
